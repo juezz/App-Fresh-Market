@@ -5,32 +5,100 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 export default function LoginPage() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
+  const [phone, setPhone] = useState("")
   const [address, setAddress] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Implementar lógica de login
-    console.log("Login:", { email, password })
+    setLoading(true)
+
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) {
+        toast.error(error.message)
+        return
+      }
+
+      // Get user role from profiles
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+
+      toast.success('Inicio de sesión exitoso')
+
+      // Redirect based on role
+      if (profile?.role === 'admin') {
+        router.push('/admin')
+      } else if (profile?.role === 'vendedor') {
+        router.push('/vendedor')
+      } else {
+        router.push('/')
+      }
+    } catch (error) {
+      toast.error('Error al iniciar sesión')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Implementar lógica de registro
-    console.log("Register:", { name, email, password, address })
+    setLoading(true)
+
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL ||
+            `${window.location.origin}/`,
+          data: {
+            full_name: name,
+            phone,
+            address,
+            role: 'cliente', // Default role for new users
+          },
+        },
+      })
+
+      if (error) {
+        toast.error(error.message)
+        return
+      }
+
+      toast.success('Registro exitoso. Por favor verifica tu correo electrónico.')
+    } catch (error) {
+      toast.error('Error al registrarse')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="container flex h-screen flex-col items-center justify-center px-4 md:px-6">
+    <div className="container flex min-h-screen flex-col items-center justify-center px-4 md:px-6">
       <Link href="/" className="mb-8 flex items-center">
         <Image
           src="/Logo.png?height=80&width=80"
@@ -65,6 +133,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
                 <div className="space-y-2">
@@ -80,13 +149,20 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
-                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
-                  Iniciar Sesión
+                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
+                  {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                 </Button>
               </form>
             </CardContent>
+            <CardFooter className="flex flex-col gap-2 text-center text-sm text-muted-foreground">
+              <p>Usuarios de prueba:</p>
+              <p className="text-xs">Admin: admin@freshmarket.com</p>
+              <p className="text-xs">Vendedor: vendedor@freshmarket.com</p>
+              <p className="text-xs">Contraseña: Test123!</p>
+            </CardFooter>
           </Card>
         </TabsContent>
 
@@ -107,6 +183,7 @@ export default function LoginPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
                 <div className="space-y-2">
@@ -118,6 +195,18 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={loading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Teléfono</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+57 300 123 4567"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    disabled={loading}
                   />
                 </div>
                 <div className="space-y-2">
@@ -125,10 +214,11 @@ export default function LoginPage() {
                   <Input
                     id="address"
                     type="text"
-                    placeholder="Calle, Ciudad, Código Postal"
+                    placeholder="Calle, Ciudad"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
                 <div className="space-y-2">
@@ -139,10 +229,11 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={loading}
                   />
                 </div>
-                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
-                  Registrarme
+                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
+                  {loading ? 'Registrando...' : 'Registrarme'}
                 </Button>
               </form>
             </CardContent>

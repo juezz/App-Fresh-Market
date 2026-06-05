@@ -3,6 +3,7 @@ import Image from "next/image"
 import { ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { formatCOP } from "@/lib/utils/currency"
 
 interface ProductCardProps {
   id: string
@@ -38,10 +39,10 @@ export function ProductCard({ id, name, price, originalPrice, image, category }:
         <Link href={`/product/${id}`}>
           <h3 className="mb-1 font-medium">{name}</h3>
         </Link>
-        <div className="mb-3 flex items-center">
-          <span className="text-lg font-bold text-green-600">${price.toFixed(2)}</span>
+        <div className="mb-3 flex items-center flex-wrap gap-1">
+          <span className="text-lg font-bold text-green-600">{formatCOP(price)}</span>
           {originalPrice && (
-            <span className="ml-2 text-sm text-muted-foreground line-through">${originalPrice.toFixed(2)}</span>
+            <span className="text-sm text-muted-foreground line-through">{formatCOP(originalPrice)}</span>
           )}
         </div>
         <Button className="w-full bg-green-600 hover:bg-green-700">

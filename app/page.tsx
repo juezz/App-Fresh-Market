@@ -109,28 +109,28 @@ export default function Home() {
               <ProductCard
                 id="1"
                 name="Manzanas Rojas"
-                price={10.999}
+                price={4500}
                 image="/Manzana%20Roja.jpeg?height=200&width=200"
                 category="Frutas"
               />
               <ProductCard
                 id="2"
                 name="Plátanos Orgánicos"
-                price={1.99}
+                price={2800}
                 image="/Platano%20Organico.jpeg?height=200&width=200"
                 category="Frutas"
               />
               <ProductCard
                 id="3"
                 name="Lechuga Fresca"
-                price={1.49}
+                price={3800}
                 image="/Lechuga%20Fresca.jpeg?height=200&width=200"
                 category="Verduras"
               />
               <ProductCard
                 id="4"
                 name="Tomates"
-                price={2.49}
+                price={4200}
                 image="/Tomate.jpeg?height=200&width=200"
                 category="Verduras"
               />
@@ -144,32 +144,32 @@ export default function Home() {
               <ProductCard
                 id="5"
                 name="Fresas Premium"
-                price={3.99}
-                originalPrice={5.99}
+                price={12500}
+                originalPrice={14000}
                 image="/Fresas.jpg?height=200&width=200"
                 category="Frutas"
               />
               <ProductCard
                 id="6"
                 name="Zanahorias Orgánicas"
-                price={1.29}
-                originalPrice={1.99}
+                price={2800}
+                originalPrice={3500}
                 image="/Zanahoria.jpeg?height=200&width=200"
                 category="Verduras"
               />
               <ProductCard
                 id="7"
                 name="Yogurt Natural"
-                price={2.49}
-                originalPrice={3.49}
+                price={8500}
+                originalPrice={9200}
                 image="/Yogur.jpg?height=200&width=200"
                 category="Lácteos"
               />
               <ProductCard
                 id="8"
                 name="Pan Integral"
-                price={2.29}
-                originalPrice={2.99}
+                price={6800}
+                originalPrice={7500}
                 image="/Pan integral.jpeg?height=200&width=200"
                 category="Panadería"
               />
